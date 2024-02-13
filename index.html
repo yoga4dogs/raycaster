@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id="overhead_view" width="400px" height="400px"></canvas>
+        <script>
+            width = {
+                screen: 400,
+                grid: 8
+            }
+            height = {
+                screen: 400,
+                grid: 8
+            }
+            size = height.screen / height.grid;
+            mouseX = width.screen/2;
+            mouseY = height.screen/2;
+            
+            document.getElementById("overhead_view").width = width.screen;
+            document.getElementById("overhead_view").height = height.screen;
+            m = document.getElementById("overhead_view").getContext("2d");
+
+            map = {
+                layout: [
+                    1, 1, 1, 1, 1, 1, 1, 1, 
+                    1, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 1, 1,
+                    1, 0, 0, 0, 0, 1, 0, 1,
+                    1, 0, 1, 0, 0, 1, 0, 1,
+                    1, 0, 1, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1
+                ],
+                draw_map: function() {
+                    for(y=0; y < height.grid; y++) {
+                        for(x=0; x < width.grid; x++) {
+                            if(map.layout[width.grid*y+x]==1) { draw(x*size, y*size, "white", size); }
+                        }
+                    }
+                }
+            };
+
+            player = {
+                x: width.screen/2,
+                y: height.screen/2,
+                dir: 0,
+                draw: function() { 
+                    draw(player.x, player.y, "red", 2);
+                },
+                draw_pointer: function() {
+                    const dir_rotation = rotate(player.x, player.y, player.x+20, player.y, player.dir);
+                    m.strokeStyle = 'red';
+                    m.lineWidth = 1;
+                    m.beginPath();
+                    m.moveTo(player.x, player.y);
+                    m.lineTo(dir_rotation[0], dir_rotation[1]);
+                    m.stroke();
+                }    
+            };
+
+            function rotate(cx, cy, x, y, angle) {
+                var radians = (Math.PI / 180) * angle,
+                    cos = Math.cos(radians),
+                    sin = Math.sin(radians),
+                    nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+                    ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+                return [nx, ny];
+            };
+
+            function clear_canvas() {
+                m.clearRect(0, 0, width.screen, height.screen);
+                draw(0, 0, "#0a0a0a", Math.max(width.screen, height.screen));
+            };
+
+            function draw(x, y, c, s) {
+                m.fillStyle = c;
+                m.fillRect(x, y, s, s);
+            };
+
+            document.addEventListener('keydown', function(event) {
+                if(event.keyCode == 37) {
+                    // left
+                    player.dir = (player.dir+3);
+                    console.log(player.dir);
+                }
+                else if(event.keyCode == 39) {
+                    // right
+                    player.dir = (player.dir-3);
+                    console.log(player.dir);
+                }
+            });
+
+            function update() {
+                clear_canvas()
+                map.draw_map(map);
+                player.draw();
+                player.draw_pointer();
+                requestAnimationFrame(update);
+            };
+
+            update();
+
+        </script>
+    </body>
+</html>
