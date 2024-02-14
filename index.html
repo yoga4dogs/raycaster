@@ -86,7 +86,7 @@
                 draw_map: function() {
                     for(y=0; y < height.grid; y++) {
                         for(x=0; x < width.grid; x++) {
-                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "grey", grid_size); }
+                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "white", grid_size); }
                         }
                     }
                 }
@@ -120,7 +120,7 @@
                         for(i = 1; i < width.screen; i++) {
                             const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/2-player.fov/2);
                             if (check_pos(ray_dir[0], ray_dir[1]) == 1) {
-                                draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "white", 1);
+                                draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "yellow", 1);
                                 ray_view.push(vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]));
                                 break;
                             }
@@ -152,13 +152,15 @@
             clear = {
                 overhead: function() {
                     overhead.clearRect(0, 0, width.screen, height.screen);
-                    overhead.fillStyle = "#0a0a0a";
+                    overhead.fillStyle = "LightSlateGray";
                     overhead.fillRect(0, 0, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
                 },
                 pov: function() {
                     pov.clearRect(0, 0, width.screen, height.screen);
-                    pov.fillStyle = "#0a0a0a";
-                    pov.fillRect(0, 0, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
+                    pov.fillStyle = "LightSlateGray";
+                    pov.fillRect(0, height.screen/2, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
+                    pov.fillStyle = "DodgerBlue";
+                    pov.fillRect(0, 0, width.screen, height.screen/2);
                 }
             }
 
@@ -185,7 +187,7 @@
                 const slice_size = width.screen / view.length;
                 for (i=0; i<view.length; i++) {
                     const distance_inverse = height.screen-view[i];
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + distance_inverse + ", " + distance_inverse + ", " + distance_inverse + ")", slice_size, distance_inverse);
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + distance_inverse + ", " + distance_inverse + ", " + distance_inverse + ")", slice_size+1, distance_inverse);
                 }
             }
 
