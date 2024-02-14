@@ -134,7 +134,7 @@
                 ray_test: function() {
                     ray_view = [];
                     for(d = 0 ; d < player.fov*2; d++) {
-                        for(i = 1; i < width.screen; i++) {
+                        for(i = 1; i < width.screen*2; i++) {
                             const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/2-player.fov/2);
                             if (check_pos(ray_dir[0], ray_dir[1]) == 1) {
                                 draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "yellow", 1);
