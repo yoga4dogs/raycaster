@@ -29,7 +29,7 @@
         <center>
             <label>FOV:</label><input type="range" min="1" max="360" value="66" id="fov_slider" > </br>
             Arrow keys to move.<br>
-            <a href="'http://funcity-online.com/" style='color: white;'>Home</a>
+            <a href="http://funcity-online.com/" style='color: white;'>Home</a>
         </center>
         </div>
 
@@ -116,6 +116,7 @@
                 speed: 4,
                 size: 4,
                 fov: 66,
+                fov_density: 4,
                 ray_view: [],
                 draw: function() { 
                     draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
@@ -125,20 +126,33 @@
                     draw.line(overhead, player.x, player.y, dir_rotation[0], dir_rotation[1], "blue", 1);
                 },
                 move: function(direction) {
-                    const facing = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir);
-                    if (check_pos(facing[0], facing[1]) != 1) {
-                        player.x = facing[0];
-                        player.y = facing[1];
+                    const aiming_point = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir);
+                    if (check_pos(aiming_point[0], aiming_point[1]).tile_val != 1) {
+                        player.x = aiming_point[0];
+                        player.y = aiming_point[1];
                     }
                 },
+                // this is such a fucking mess i hate it
                 ray_test: function() {
                     ray_view = [];
-                    for(d = 0 ; d < player.fov*2; d++) {
+                    for(d = 0 ; d < player.fov*player.fov_density; d++) {
                         for(i = 1; i < width.screen*2; i++) {
-                            const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/2-player.fov/2);
-                            if (check_pos(ray_dir[0], ray_dir[1]) == 1) {
+                            const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/player.fov_density-player.fov/2);
+                            wall_facing = "white";
+                            const hit_spot = check_pos(ray_dir[0], ray_dir[1]);
+                            if (hit_spot.tile_val == 1) {
+                                // try to check wall facing dir
+                                const ray_dir_step_back = rotate(player.x, player.y, player.x+i-1, player.y, player.dir+d/player.fov_density-player.fov/2);
+                                const hit_spot_step_back = check_pos(ray_dir_step_back[0], ray_dir_step_back[1]);
+                                if (hit_spot_step_back.tile_val == 0) {
+                                    if(hit_spot_step_back.x == hit_spot.x) {
+                                        wall_facing = "grey";
+                                    } else {
+                                        wall_facing = "lightgrey";
+                                    }
+                                }
                                 draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "yellow", 1);
-                                ray_view.push(vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]));
+                                ray_view.push([vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]), wall_facing]);
                                 break;
                             }
                         }
@@ -146,11 +160,23 @@
                     ray_view.reverse();
                 }
             };
+            
+            function wall_view(view) {
+                const slice_size = width.screen / view.length;
+                for (i=0; i<view.length; i++) {
+                    const distance_inverse = height.screen-view[i][0];
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, view[i][1], slice_size+1, distance_inverse);
+                }
+            }
 
             function check_pos(x, y) {
                 const checkX = (x-(x%grid_size))/grid_size;
                 const checkY = (y-(y%grid_size))/grid_size;
-                return map.layout[width.grid*checkY+checkX];
+                return {
+                    tile_val: map.layout[width.grid*checkY+checkX], 
+                    x: checkX,
+                    y: checkY
+                };
             }
 
             function vector_distance(x1, y1, x2, y2) {
@@ -200,13 +226,6 @@
                 }
             };
 
-            function wall_view(view) {
-                const slice_size = width.screen / view.length;
-                for (i=0; i<view.length; i++) {
-                    const distance_inverse = height.screen-view[i];
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + distance_inverse + ", " + distance_inverse + ", " + distance_inverse + ")", slice_size+1, distance_inverse);
-                }
-            }
 
             function update() {
                 clear.overhead();
