@@ -1,8 +1,33 @@
 <!DOCTYPE html>
 <html>
+    <title>FUNCITY HEAVY INDUSTRIES RAYCAST DUNGEON</title>
+    <link rel="shortcut icon" type="image/jpg" href="../images/smile.gif"/>
+
+    <style>
+        body {
+            color: white;
+            background-image: url('../play/images/marbledark.jpg');
+            background-size: cover;
+            font-family: MingLiU-ExtB, Microsoft Yi Baiti;
+        }
+        div.inline {
+            float:left; 
+        }
+    </style>
     <body>
-        <canvas id="overhead_view" width="400px" height="400px"></canvas>
-        <canvas id="pov_view" width="400px" height="400px"></canvas>
+        <div style='background-color: rgb(0 0 0 / 0.5); 
+            position: absolute; 
+            width: 1608px;
+            height: 800px;
+            top: 50%;
+            left: 50%;
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);'>
+        <canvas id="overhead_view" style="display: inline-block;" width="400px" height="400px"></canvas>
+        <canvas id="pov_view" style="display: inline-block;" width="400px" height="400px"></canvas>
+        <br>
+        <center><a href="'http://funcity-online.com/" style='color: white;'>Home</a></center>
+        </div>
 
         <script>
             width = {
@@ -71,7 +96,8 @@
             function wall_view(view) {
                 const slice_size = width.screen / view.length;
                 for (i=0; i<view.length; i++) {
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - (height.screen-view[i])/2, "white", slice_size, (height.screen-view[i]));
+                    const distance_inverse = height.screen-view[i];
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + distance_inverse + ", " + distance_inverse + ", " + distance_inverse + ")", slice_size, distance_inverse);
                 }
             }
 
@@ -81,7 +107,7 @@
                 dir: 0,
                 speed: 4,
                 size: 4,
-                fov: 45,
+                fov: 66,
                 ray_view: [],
                 draw: function() { 
                     draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
@@ -104,9 +130,9 @@
                 },
                 ray_test: function() {
                     ray_view = [];
-                    for(d = 0 ; d < player.fov; d++) {
+                    for(d = 0 ; d < player.fov*2; d++) {
                         for(i = 1; i < width.screen; i++) {
-                            const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d-player.fov/2);
+                            const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/2-player.fov/2);
                             if (player.check_pos(ray_dir[0], ray_dir[1]) == 1) {
                                 draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "white", 1);
                                 ray_view.push(vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]));
