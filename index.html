@@ -26,7 +26,10 @@
         <canvas id="overhead_view" style="display: inline-block;" width="400px" height="400px"></canvas>
         <canvas id="pov_view" style="display: inline-block;" width="400px" height="400px"></canvas>
         <br>
-        <center><a href="'http://funcity-online.com/" style='color: white;'>Home</a></center>
+        <center>
+            Arrow keys to move.<br>
+            <a href="'http://funcity-online.com/" style='color: white;'>Home</a>
+        </center>
         </div>
 
         <script>
@@ -93,9 +96,9 @@
             };
 
             player = {
-                x: width.screen/2-20,
-                y: height.screen/2-20,
-                dir: 0,
+                x: width.screen-60,
+                y: 60,
+                dir: 235,
                 speed: 4,
                 size: 4,
                 fov: 66,
