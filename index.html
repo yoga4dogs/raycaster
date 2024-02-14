@@ -27,6 +27,7 @@
         <canvas id="pov_view" style="display: inline-block;" width="400px" height="400px"></canvas>
         <br>
         <center>
+            <label>FOV:</label><input type="range" min="1" max="360" value="16" id="fov_slider" > </br>
             Arrow keys to move.<br>
             <a href="'http://funcity-online.com/" style='color: white;'>Home</a>
         </center>
@@ -35,11 +36,11 @@
         <script>
             width = {
                 screen: 400,
-                grid: 8
+                grid: 16
             }
             height = {
                 screen: 400,
-                grid: 8
+                grid: 16
             }
             grid_size = height.screen / height.grid;
             scale = 2;
@@ -57,6 +58,12 @@
             document.getElementById("pov_view").height = height.screen*scale;
             pov = document.getElementById("pov_view").getContext("2d");
             pov.scale(scale, scale);
+
+            fov_slider = document.getElementById("fov_slider");
+
+            fov_slider.oninput = function() {
+                player.fov = fov_slider.value;
+            }
 
             // this sucks ass
             document.addEventListener('keydown', function(event) {
@@ -77,14 +84,22 @@
 
             map = {
                 layout: [
-                    1, 1, 1, 1, 1, 1, 1, 1, 
-                    1, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 1, 0, 0, 0, 0, 1,
-                    1, 1, 1, 0, 0, 0, 0, 1,
-                    1, 0, 0, 0, 1, 0, 1, 1,
-                    1, 0, 1, 0, 1, 0, 0, 1,
-                    1, 0, 1, 0, 1, 0, 0, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 
+                    1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 
+                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 
+                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 
+                    1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 
+                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 
+                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                 ],
                 draw_map: function() {
                     for(y=0; y < height.grid; y++) {
@@ -155,14 +170,14 @@
             clear = {
                 overhead: function() {
                     overhead.clearRect(0, 0, width.screen, height.screen);
-                    overhead.fillStyle = "black";
+                    overhead.fillStyle = "#262626";
                     overhead.fillRect(0, 0, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
                 },
                 pov: function() {
                     pov.clearRect(0, 0, width.screen, height.screen);
-                    pov.fillStyle = "LightSlateGray";
+                    pov.fillStyle = "#262626";
                     pov.fillRect(0, height.screen/2, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
-                    pov.fillStyle = "DodgerBlue";
+                    pov.fillStyle = "#4d0000";
                     pov.fillRect(0, 0, width.screen, height.screen/2);
                 }
             }
