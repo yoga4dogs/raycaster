@@ -13,19 +13,22 @@
                 screen: 400,
                 grid: 8
             }
-            size = height.screen / height.grid;
+            grid_size = height.screen / height.grid;
+            scale = 2;
 
             mouse = {
                 x: width.screen/2,
                 y: height.screen/2
             }
             
-            document.getElementById("overhead_view").width = width.screen;
-            document.getElementById("overhead_view").height = height.screen;
+            document.getElementById("overhead_view").width = width.screen*scale;
+            document.getElementById("overhead_view").height = height.screen*scale;
             overhead = document.getElementById("overhead_view").getContext("2d");
+            overhead.scale(scale, scale);
             document.getElementById("pov_view").width = width.screen;
             document.getElementById("pov_view").height = height.screen;
             pov = document.getElementById("pov_view").getContext("2d");
+            pov.scale(scale, scale);
 
             // this sucks ass
             document.addEventListener('keydown', function(event) {
@@ -49,17 +52,17 @@
                 layout: [
                     1, 1, 1, 1, 1, 1, 1, 1, 
                     1, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 1, 1,
                     1, 0, 0, 0, 0, 1, 0, 1,
-                    1, 0, 1, 0, 0, 1, 0, 1,
+                    1, 0, 1, 0, 0, 1, 1, 1,
                     1, 0, 1, 0, 0, 0, 0, 1,
                     1, 1, 1, 1, 1, 1, 1, 1
                 ],
                 draw_map: function() {
                     for(y=0; y < height.grid; y++) {
                         for(x=0; x < width.grid; x++) {
-                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*size, y*size, "grey", size); }
+                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "grey", grid_size); }
                         }
                     }
                 }
@@ -70,19 +73,26 @@
                 y: height.screen/2,
                 dir: 0,
                 speed: 4,
+                size: 4,
                 draw: function() { 
-                    draw.square(overhead, player.x, player.y, "red", 2);
+                    draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
                 },
                 draw_pointer: function() {
-                    const dir_rotation = rotate(player.x, player.y, player.x+20, player.y, player.dir);
-                    draw.line(overhead, player.x, player.y, dir_rotation[0], dir_rotation[1], "red", 1);
+                    const dir_rotation = rotate(player.x, player.y, player.x+10, player.y, player.dir);
+                    draw.line(overhead, player.x, player.y, dir_rotation[0], dir_rotation[1], "white", 1);
                 },
                 move: function(direction) {
                     const facing = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir);
-                    player.x = facing[0];
-                    player.y = facing[1];
+                    if (player.check_pos(facing[0], facing[1]) != 1) {
+                        player.x = facing[0];
+                        player.y = facing[1];
+                    }
                 },
-                
+                check_pos: function(x, y) {
+                    const checkX = (x-(x%grid_size))/grid_size;
+                    const checkY = (y-(y%grid_size))/grid_size;
+                    return map.layout[width.grid*checkY+checkX];
+                }
             };
 
             function rotate(cx, cy, x, y, angle) {
@@ -129,8 +139,8 @@
             function update() {
                 clear.overhead();
                 map.draw_map(map);
-                player.draw();
                 player.draw_pointer();
+                player.draw();
                 requestAnimationFrame(update);
             };
 
