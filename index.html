@@ -60,8 +60,7 @@
                 if(event.keyCode == 37) {
                     // left
                     player.dir = (player.dir+player.speed*1.5);
-                }
-                else if(event.keyCode == 39) {
+                } else if(event.keyCode == 39) {
                     // right
                     player.dir = (player.dir-player.speed*1.5);
                 } else if(event.keyCode == 38) {
@@ -93,14 +92,6 @@
                 }
             };
 
-            function wall_view(view) {
-                const slice_size = width.screen / view.length;
-                for (i=0; i<view.length; i++) {
-                    const distance_inverse = height.screen-view[i];
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + distance_inverse + ", " + distance_inverse + ", " + distance_inverse + ")", slice_size, distance_inverse);
-                }
-            }
-
             player = {
                 x: width.screen/2-20,
                 y: height.screen/2-20,
@@ -118,22 +109,17 @@
                 },
                 move: function(direction) {
                     const facing = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir);
-                    if (player.check_pos(facing[0], facing[1]) != 1) {
+                    if (check_pos(facing[0], facing[1]) != 1) {
                         player.x = facing[0];
                         player.y = facing[1];
                     }
-                },
-                check_pos: function(x, y) {
-                    const checkX = (x-(x%grid_size))/grid_size;
-                    const checkY = (y-(y%grid_size))/grid_size;
-                    return map.layout[width.grid*checkY+checkX];
                 },
                 ray_test: function() {
                     ray_view = [];
                     for(d = 0 ; d < player.fov*2; d++) {
                         for(i = 1; i < width.screen; i++) {
                             const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/2-player.fov/2);
-                            if (player.check_pos(ray_dir[0], ray_dir[1]) == 1) {
+                            if (check_pos(ray_dir[0], ray_dir[1]) == 1) {
                                 draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "white", 1);
                                 ray_view.push(vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]));
                                 break;
@@ -143,6 +129,12 @@
                     ray_view.reverse();
                 }
             };
+
+            function check_pos(x, y) {
+                const checkX = (x-(x%grid_size))/grid_size;
+                const checkY = (y-(y%grid_size))/grid_size;
+                return map.layout[width.grid*checkY+checkX];
+            }
 
             function vector_distance(x1, y1, x2, y2) {
                 return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
@@ -188,6 +180,14 @@
                     obj.stroke();
                 }
             };
+
+            function wall_view(view) {
+                const slice_size = width.screen / view.length;
+                for (i=0; i<view.length; i++) {
+                    const distance_inverse = height.screen-view[i];
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + distance_inverse + ", " + distance_inverse + ", " + distance_inverse + ")", slice_size, distance_inverse);
+                }
+            }
 
             function update() {
                 clear.overhead();
