@@ -86,7 +86,7 @@
                 draw_map: function() {
                     for(y=0; y < height.grid; y++) {
                         for(x=0; x < width.grid; x++) {
-                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "white", grid_size); }
+                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "grey", grid_size); }
                         }
                     }
                 }
@@ -152,7 +152,7 @@
             clear = {
                 overhead: function() {
                     overhead.clearRect(0, 0, width.screen, height.screen);
-                    overhead.fillStyle = "LightSlateGray";
+                    overhead.fillStyle = "black";
                     overhead.fillRect(0, 0, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
                 },
                 pov: function() {
