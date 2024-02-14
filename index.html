@@ -34,11 +34,11 @@
             document.addEventListener('keydown', function(event) {
                 if(event.keyCode == 37) {
                     // left
-                    player.dir = (player.dir+player.speed);
+                    player.dir = (player.dir+player.speed*1.5);
                 }
                 else if(event.keyCode == 39) {
                     // right
-                    player.dir = (player.dir-player.speed);
+                    player.dir = (player.dir-player.speed*1.5);
                 } else if(event.keyCode == 38) {
                     // forward
                     player.move(1);
@@ -52,11 +52,11 @@
                 layout: [
                     1, 1, 1, 1, 1, 1, 1, 1, 
                     1, 0, 0, 0, 0, 0, 0, 1,
-                    1, 1, 1, 1, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 1, 0, 1,
-                    1, 0, 1, 0, 0, 1, 1, 1,
                     1, 0, 1, 0, 0, 0, 0, 1,
+                    1, 1, 1, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 1, 0, 1, 1,
+                    1, 0, 1, 0, 1, 0, 0, 1,
+                    1, 0, 1, 0, 1, 0, 0, 1,
                     1, 1, 1, 1, 1, 1, 1, 1
                 ],
                 draw_map: function() {
@@ -69,17 +69,18 @@
             };
 
             player = {
-                x: width.screen/2,
-                y: height.screen/2,
+                x: width.screen/2-20,
+                y: height.screen/2-20,
                 dir: 0,
                 speed: 4,
                 size: 4,
+                fov: 90,
                 draw: function() { 
                     draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
                 },
                 draw_pointer: function() {
                     const dir_rotation = rotate(player.x, player.y, player.x+10, player.y, player.dir);
-                    draw.line(overhead, player.x, player.y, dir_rotation[0], dir_rotation[1], "white", 1);
+                    draw.line(overhead, player.x, player.y, dir_rotation[0], dir_rotation[1], "blue", 1);
                 },
                 move: function(direction) {
                     const facing = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir);
@@ -92,8 +93,24 @@
                     const checkX = (x-(x%grid_size))/grid_size;
                     const checkY = (y-(y%grid_size))/grid_size;
                     return map.layout[width.grid*checkY+checkX];
+                },
+                ray_test: function() {
+                    for(d = 0 ; d < player.fov; d++) {
+                        for(i = 1; i < width.screen; i++) {
+                            const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d-player.fov/2);
+                            if (player.check_pos(ray_dir[0], ray_dir[1]) == 1) {
+                                draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "white", 1);
+                                vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]);
+                                break;
+                            }
+                        }
+                    }
                 }
             };
+
+            function vector_distance(x1, y1, x2, y2) {
+                return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+            }
 
             function rotate(cx, cy, x, y, angle) {
                 var radians = (Math.PI / 180) * angle,
@@ -139,6 +156,7 @@
             function update() {
                 clear.overhead();
                 map.draw_map(map);
+                player.ray_test();
                 player.draw_pointer();
                 player.draw();
                 requestAnimationFrame(update);
