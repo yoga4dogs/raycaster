@@ -116,7 +116,7 @@
                 speed: 4,
                 size: 4,
                 fov: 66,
-                fov_density: 4,
+                fov_density: 8,
                 ray_view: [],
                 draw: function() { 
                     draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
@@ -135,6 +135,7 @@
                 // this is such a fucking mess i hate it
                 ray_test: function() {
                     ray_view = [];
+                    let last_color = [];
                     for(d = 0 ; d < player.fov*player.fov_density; d++) {
                         for(i = 1; i < width.screen*2; i++) {
                             const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/player.fov_density-player.fov/2);
@@ -147,17 +148,21 @@
                                 const hit_spot_step_back = check_pos(ray_dir_step_back[0], ray_dir_step_back[1]);
                                 if (hit_spot_step_back.tile_val == 0) {
                                     if(hit_spot_step_back.x == hit_spot.x) {
-                                        wall_color1 = 1;
-                                        wall_color2 = 2;
-                                        wall_color3 = 0.5;
+                                        wall_color = "rgb(147,112,219)";
+                                        last_color = wall_color;
+                                    } else if(hit_spot_step_back.y == hit_spot.y) {
+                                        wall_color = "rgb(60,179,113)";
+                                        last_color = wall_color;
                                     } else {
-                                        wall_color1 = 1;
-                                        wall_color2 = 0.5;
-                                        wall_color3 = 2;
+                                        wall_color = last_color;
                                     }
                                 }
                                 draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "yellow", 1);
-                                ray_view.push([vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]), wall_color1, wall_color2, wall_color3]);
+                                ray_view.push({
+                                    d: vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]),
+                                    a: player.dir+d/player.fov_density-player.fov/2,
+                                    c: wall_color
+                                });
                                 break;
                             }
                         }
@@ -169,9 +174,10 @@
             function wall_view(view) {
                 const slice_size = width.screen / view.length;
                 for (i=0; i<view.length; i++) {
-                    const distance_inverse = (height.screen-view[i][0]);
+                    const distance_mod = (height.screen*64/view[i].d)*.75;
                     // sucks ass, need to do some math to fix fisheye
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + view[i][1]*distance_inverse + ", " + view[i][2]*distance_inverse + ", " + view[i][3]*distance_inverse + ")", slice_size+1, distance_inverse);
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2, view[i].c, slice_size+1, distance_mod);
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2, "rgba(32,32,32, " + view[i].d/height.screen +")", slice_size*2, distance_mod);
                 }
             }
 
@@ -206,9 +212,9 @@
                 },
                 pov: function() {
                     pov.clearRect(0, 0, width.screen, height.screen);
-                    pov.fillStyle = "#1e0033";
+                    pov.fillStyle = "#FF4500";
                     pov.fillRect(0, height.screen/2, width.screen, height.screen);
-                    pov.fillStyle = "coral";
+                    pov.fillStyle = "#F0FFF0";
                     pov.fillRect(0, 0, width.screen, height.screen/2);
                 }
             }
