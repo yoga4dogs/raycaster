@@ -17,7 +17,7 @@
     <body>
         <div style='background-color: rgba(0, 0, 0, 0.5); 
             position: absolute; 
-            width: 1208px;
+            width: 1008px;
             height: auto ;
             top: 50%;
             left: 50%;
@@ -53,10 +53,10 @@
             document.getElementById("overhead_view").width = width.screen;
             document.getElementById("overhead_view").height = height.screen;
             overhead = document.getElementById("overhead_view").getContext("2d");
-            document.getElementById("pov_view").width = width.screen*scale;
-            document.getElementById("pov_view").height = height.screen*scale*0.75;
+            document.getElementById("pov_view").width = width.screen*1.5;
+            document.getElementById("pov_view").height = height.screen;
             pov = document.getElementById("pov_view").getContext("2d");
-            pov.scale(scale, scale*0.75);
+            pov.scale(1.5, 1);
 
             fov_slider = document.getElementById("fov_slider");
 
