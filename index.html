@@ -15,16 +15,16 @@
         }
     </style>
     <body>
-        <div style='background-color: rgb(0 0 0 / 0.5); 
+        <div style='background-color: rgba(0, 0, 0, 0.5); 
             position: absolute; 
             width: 1208px;
-            height: 400px;
+            height: auto ;
             top: 50%;
             left: 50%;
             -ms-transform: translate(-50%, -55%);
             transform: translate(-50%, -55%);'>
-        <canvas id="overhead_view" style="display: inline-block;" width="400px" height="400px"></canvas>
-        <canvas id="pov_view" style="display: inline-block;" width="400px" height="400px"></canvas>
+        <canvas id="overhead_view" width="400px" height="400px"></canvas>
+        <canvas id="pov_view" width="400px" height="400px"></canvas>
         <br>
         <center>
             <label>FOV:</label><input type="range" min="1" max="360" value="66" id="fov_slider" > </br>
@@ -54,9 +54,9 @@
             document.getElementById("overhead_view").height = height.screen;
             overhead = document.getElementById("overhead_view").getContext("2d");
             document.getElementById("pov_view").width = width.screen*scale;
-            document.getElementById("pov_view").height = height.screen;
+            document.getElementById("pov_view").height = height.screen*scale*0.75;
             pov = document.getElementById("pov_view").getContext("2d");
-            pov.scale(scale, 1);
+            pov.scale(scale, scale*0.75);
 
             fov_slider = document.getElementById("fov_slider");
 
@@ -116,14 +116,14 @@
                 speed: 4,
                 size: 4,
                 fov: 66,
-                fov_density: 8,
+                fov_density: 4,
                 ray_view: [],
                 draw: function() { 
                     draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
                 },
                 draw_pointer: function() {
-                    const dir_rotation = rotate(player.x, player.y, player.x+10, player.y, player.dir);
-                    draw.line(overhead, player.x, player.y, dir_rotation[0], dir_rotation[1], "blue", 1);
+                    const pointer_rotation = rotate(player.x, player.y, player.x+10, player.y, player.dir);
+                    draw.line(overhead, player.x, player.y, pointer_rotation[0], pointer_rotation[1], "blue", 1);
                 },
                 move: function(direction) {
                     const aiming_point = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir);
@@ -138,7 +138,7 @@
                     for(d = 0 ; d < player.fov*player.fov_density; d++) {
                         for(i = 1; i < width.screen*2; i++) {
                             const ray_dir = rotate(player.x, player.y, player.x+i, player.y, player.dir+d/player.fov_density-player.fov/2);
-                            wall_facing = "white";
+                            wall_color = "white";
                             const hit_spot = check_pos(ray_dir[0], ray_dir[1]);
                             if (hit_spot.tile_val == 1) {
                                 // try to check wall facing dir
@@ -147,13 +147,17 @@
                                 const hit_spot_step_back = check_pos(ray_dir_step_back[0], ray_dir_step_back[1]);
                                 if (hit_spot_step_back.tile_val == 0) {
                                     if(hit_spot_step_back.x == hit_spot.x) {
-                                        wall_facing = "grey";
+                                        wall_color1 = 1;
+                                        wall_color2 = 2;
+                                        wall_color3 = 0.5;
                                     } else {
-                                        wall_facing = "lightgrey";
+                                        wall_color1 = 1;
+                                        wall_color2 = 0.5;
+                                        wall_color3 = 2;
                                     }
                                 }
                                 draw.line(overhead, player.x, player.y, ray_dir[0], ray_dir[1], "yellow", 1);
-                                ray_view.push([vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]), wall_facing]);
+                                ray_view.push([vector_distance(player.x, player.y, ray_dir[0], ray_dir[1]), wall_color1, wall_color2, wall_color3]);
                                 break;
                             }
                         }
@@ -166,7 +170,8 @@
                 const slice_size = width.screen / view.length;
                 for (i=0; i<view.length; i++) {
                     const distance_inverse = height.screen-view[i][0];
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, view[i][1], slice_size+1, distance_inverse);
+                    // sucks ass
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + view[i][1]*distance_inverse + ", " + view[i][2]*distance_inverse + ", " + view[i][3]*distance_inverse + ")", slice_size+1, distance_inverse);
                 }
             }
 
@@ -197,12 +202,12 @@
                 overhead: function() {
                     overhead.clearRect(0, 0, width.screen, height.screen);
                     overhead.fillStyle = "#262626";
-                    overhead.fillRect(0, 0, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
+                    overhead.fillRect(0, 0, width.screen, height.screen);
                 },
                 pov: function() {
                     pov.clearRect(0, 0, width.screen, height.screen);
                     pov.fillStyle = "#262626";
-                    pov.fillRect(0, height.screen/2, Math.max(width.screen, height.screen), Math.max(width.screen, height.screen));
+                    pov.fillRect(0, height.screen/2, width.screen, height.screen);
                     pov.fillStyle = "#4d0000";
                     pov.fillRect(0, 0, width.screen, height.screen/2);
                 }
