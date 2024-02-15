@@ -103,7 +103,7 @@
                 draw_map: function() {
                     for(y=0; y < height.grid; y++) {
                         for(x=0; x < width.grid; x++) {
-                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "grey", grid_size); }
+                            if(map.layout[width.grid*y+x]==1) { draw.square(overhead, x*grid_size, y*grid_size, "RosyBrown", grid_size); }
                         }
                     }
                 }
@@ -169,8 +169,8 @@
             function wall_view(view) {
                 const slice_size = width.screen / view.length;
                 for (i=0; i<view.length; i++) {
-                    const distance_inverse = height.screen-view[i][0];
-                    // sucks ass
+                    const distance_inverse = (height.screen-view[i][0]);
+                    // sucks ass, need to do some math to fix fisheye
                     draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_inverse/2, "rgb(" + view[i][1]*distance_inverse + ", " + view[i][2]*distance_inverse + ", " + view[i][3]*distance_inverse + ")", slice_size+1, distance_inverse);
                 }
             }
@@ -201,14 +201,14 @@
             clear = {
                 overhead: function() {
                     overhead.clearRect(0, 0, width.screen, height.screen);
-                    overhead.fillStyle = "#262626";
+                    overhead.fillStyle = "#1e0033";
                     overhead.fillRect(0, 0, width.screen, height.screen);
                 },
                 pov: function() {
                     pov.clearRect(0, 0, width.screen, height.screen);
-                    pov.fillStyle = "#262626";
+                    pov.fillStyle = "#1e0033";
                     pov.fillRect(0, height.screen/2, width.screen, height.screen);
-                    pov.fillStyle = "#4d0000";
+                    pov.fillStyle = "coral";
                     pov.fillRect(0, 0, width.screen, height.screen/2);
                 }
             }
