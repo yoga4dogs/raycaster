@@ -174,7 +174,7 @@
             function wall_view(view) {
                 const slice_size = width.screen / view.length;
                 for (i=0; i<view.length; i++) {
-                    const distance_mod = (height.screen*64/view[i].d)*.75;
+                    const distance_mod = (height.screen*64/view[i].d)*0.5;
                     // sucks ass, need to do some math to fix fisheye
                     draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2, view[i].c, slice_size+1, distance_mod);
                     draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2, "rgba(32,32,32, " + view[i].d/height.screen +")", slice_size*2, distance_mod);
