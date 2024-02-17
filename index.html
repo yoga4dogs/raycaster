@@ -28,7 +28,7 @@
         <br>
         <center>
             <label>FOV:</label><input type="range" min="1" max="360" value="66" id="fov_slider" > </br>
-            Arrow keys to move.<br>
+            WASD + Arrow keys to move.<br>
             <a href="http://funcity-online.com/" style='color: white;'>Home</a>
         </center>
         </div>
@@ -62,10 +62,14 @@
             // i read this on a blog or something
             key = {
                 pressed: {},
-                LEFT: 37,
                 UP: 38,
-                RIGHT: 39,
+                SUP: 87,
+                SLEFT: 65,
+                LEFT: 37,
                 DOWN: 40,
+                SDOWN: 83,
+                SRIGHT: 68,
+                RIGHT: 39,
                 isDown: function(keyCode) {
                     return this.pressed[keyCode];
                 },
@@ -82,20 +86,20 @@
             map = {
                 layout: [
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-                    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
-                    1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 
-                    1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 
-                    1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 
-                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 
-                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 
+                    1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
-                    1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 
-                    1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 
-                    1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 
-                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 
-                    1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 
+                    1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 
+                    1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
                 ],
                 draw_map: function() {
@@ -119,6 +123,7 @@
                 ray_view: [],
                 draw: function() { 
                     draw.square(overhead, player.x-player.size/2, player.y-player.size/2, "red", player.size);
+                    this.draw_pointer();
                 },
                 draw_pointer: function() {
                     const pointer_rotation = rotate(player.x, player.y, player.x+10, player.y, player.dir);
@@ -131,16 +136,24 @@
                         player.y = aiming_point[1];
                     }
                 },
+                strafe: function(direction) {
+                    const strafe_point = rotate(player.x, player.y, player.x+player.speed*direction, player.y, player.dir-90);
+                    if (check_pos(strafe_point[0], strafe_point[1]).tile_val != 1) {
+                        player.x = strafe_point[0];
+                        player.y = strafe_point[1];
+                    }
+                },
                 turn: function(direction) {
                     player.dir = (player.dir-player.turn_speed*direction);
                 },
                 update: function() {
-                    if (key.isDown(key.UP)) this.move(1);
+                    if (key.isDown(key.UP) || key.isDown(key.SUP)) this.move(1);
+                    if (key.isDown(key.SLEFT)) this.strafe(-1);
                     if (key.isDown(key.LEFT)) this.turn(-1);
-                    if (key.isDown(key.DOWN)) player.move(-1);
+                    if (key.isDown(key.DOWN) || key.isDown(key.SDOWN)) player.move(-1);
+                    if (key.isDown(key.SRIGHT)) this.strafe(1);
                     if (key.isDown(key.RIGHT)) this.turn(1);
                     this.ray_test();
-                    this.draw_pointer();
                     this.draw();
                 },
                 // this is such a fucking mess i hate it
@@ -165,6 +178,7 @@
                                         wall_color = "rgb(60,179,113)";
                                         last_color = wall_color;
                                     } else {
+                                        // goofy workaround for tile seam glitches, causes other less noticable problems at screen edge
                                         wall_color = last_color;
                                     }
                                 }
