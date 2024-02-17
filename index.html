@@ -62,13 +62,13 @@
             // i read this on a blog or something
             key = {
                 pressed: {},
-                UP: 38,
+                LOOKUP: 38,
                 LEFT: 37,
-                DOWN: 40,
+                LOOKDOWN: 40,
                 RIGHT: 39,
-                SUP: 87, /* W */
+                UP: 87, /* W */
                 SLEFT: 65, /* A */
-                SDOWN: 83, /* S */
+                DOWN: 83, /* S */
                 SRIGHT: 68, /* D */
                 isDown: function(keyCode) {
                     return this.pressed[keyCode];
@@ -146,13 +146,21 @@
                 turn: function(direction) {
                     player.dir = (player.dir-player.turn_speed*direction);
                 },
+                look: {
+                    angle: 0,
+                    upDown: function(direction) {
+                        this.angle = clamp(this.angle + direction*4, -height.screen/3, height.screen/3);
+                    }
+                },
                 update: function() {
-                    if (key.isDown(key.UP) || key.isDown(key.SUP)) this.move(1);
+                    if (key.isDown(key.UP)) this.move(1);
                     if (key.isDown(key.SLEFT)) this.strafe(-1);
                     if (key.isDown(key.LEFT)) this.turn(-1);
-                    if (key.isDown(key.DOWN) || key.isDown(key.SDOWN)) player.move(-1);
+                    if (key.isDown(key.DOWN)) this.move(-1);
                     if (key.isDown(key.SRIGHT)) this.strafe(1);
                     if (key.isDown(key.RIGHT)) this.turn(1);
+                    if (key.isDown(key.LOOKUP)) this.look.upDown(1);
+                    if (key.isDown(key.LOOKDOWN)) this.look.upDown(-1);
                     this.ray_test();
                     this.draw();
                 },
@@ -211,6 +219,10 @@
                 return Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
             };
 
+            function clamp(val, min, max) {
+                return Math.min(Math.max(val, min), max);
+            }
+
             function rotate(cx, cy, x, y, angle) {
                 var radians = (Math.PI / 180) * angle,
                     cos = Math.cos(radians),
@@ -229,9 +241,9 @@
                 pov: function() {
                     pov.clearRect(0, 0, width.screen, height.screen);
                     pov.fillStyle = "#FF4500";
-                    pov.fillRect(0, height.screen/2, width.screen, height.screen);
+                    pov.fillRect(0, height.screen/2 + player.look.angle, width.screen, height.screen);
                     pov.fillStyle = "#F0FFF0";
-                    pov.fillRect(0, 0, width.screen, height.screen/2);
+                    pov.fillRect(0, 0, width.screen, height.screen/2 + player.look.angle);
                 }
             };
 
@@ -260,8 +272,8 @@
                     const distance_mod = (height.screen*64/view[i].d)*0.5;
                     // sucks ass, need to do some math to fix fisheye
                     // and worse, the banding
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2, view[i].c, slice_size+1, distance_mod);
-                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2, "rgba(32,32,32, " + view[i].d/height.screen*0.5 +")", slice_size+1, distance_mod);
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2 + player.look.angle, view[i].c, slice_size+1, distance_mod);
+                    draw.rect(pov, 0+i*slice_size, height.screen/2 - distance_mod/2 + player.look.angle, "rgba(32,32,32, " + view[i].d/height.screen*0.5 +")", slice_size+1, distance_mod);
                 }
             };
 
