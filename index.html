@@ -62,14 +62,14 @@
             // i read this on a blog or something
             key = {
                 pressed: {},
-                LOOKUP: 38,
-                LEFT: 37,
-                LOOKDOWN: 40,
-                RIGHT: 39,
+                LUP: 38,
+                LLEFT: 37,
+                LDOWN: 40,
+                LRIGHT: 39,
                 UP: 87, /* W */
-                SLEFT: 65, /* A */
+                LEFT: 65, /* A */
                 DOWN: 83, /* S */
-                SRIGHT: 68, /* D */
+                RIGHT: 68, /* D */
                 isDown: function(keyCode) {
                     return this.pressed[keyCode];
                 },
@@ -154,13 +154,13 @@
                 },
                 update: function() {
                     if (key.isDown(key.UP)) this.move(1);
-                    if (key.isDown(key.SLEFT)) this.strafe(-1);
-                    if (key.isDown(key.LEFT)) this.turn(-1);
+                    if (key.isDown(key.LEFT)) this.strafe(-1);
                     if (key.isDown(key.DOWN)) this.move(-1);
-                    if (key.isDown(key.SRIGHT)) this.strafe(1);
-                    if (key.isDown(key.RIGHT)) this.turn(1);
-                    if (key.isDown(key.LOOKUP)) this.look.upDown(1);
-                    if (key.isDown(key.LOOKDOWN)) this.look.upDown(-1);
+                    if (key.isDown(key.RIGHT)) this.strafe(1);
+                    if (key.isDown(key.LUP)) this.look.upDown(1);
+                    if (key.isDown(key.LLEFT)) this.turn(-1);
+                    if (key.isDown(key.LDOWN)) this.look.upDown(-1);
+                    if (key.isDown(key.LRIGHT)) this.turn(1);
                     this.ray_test();
                     this.draw();
                 },
