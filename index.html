@@ -175,7 +175,7 @@
                             const hit_spot = check_pos(ray_dir[0], ray_dir[1]);
                             if (hit_spot.tile_val == 1) {
                                 // try to check wall facing dir
-                                // causes glitch at tile gaps
+                                // causes glitch at tile seams
                                 const ray_dir_step_back = rotate(player.x, player.y, player.x+i-1, player.y, player.dir+d/player.fov_density-player.fov/2);
                                 const hit_spot_step_back = check_pos(ray_dir_step_back[0], ray_dir_step_back[1]);
                                 if (hit_spot_step_back.tile_val == 0) {
