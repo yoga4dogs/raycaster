@@ -115,7 +115,7 @@
                 x: width.screen-grid_size*1.5,
                 y: grid_size*1.5,
                 dir: 235,
-                speed: 0.5,
+                speed: 0.75,
                 turn_speed: 0.66,
                 size: 4, /* visual only */
                 fov: 72,
@@ -153,10 +153,24 @@
                     }
                 },
                 update: function() {
-                    if (key.isDown(key.UP)) this.move(1);
-                    if (key.isDown(key.LEFT)) this.strafe(-1);
-                    if (key.isDown(key.DOWN)) this.move(-1);
-                    if (key.isDown(key.RIGHT)) this.strafe(1);
+                    if (key.isDown(key.UP) && key.isDown(key.LEFT)) {
+                        this.move(0.75);
+                        this.strafe(-0.5);
+                    } else if (key.isDown(key.UP) && key.isDown(key.RIGHT)) {
+                        this.move(0.75);
+                        this.strafe(0.5);
+                    } else if (key.isDown(key.DOWN) && key.isDown(key.LEFT)) {
+                        this.move(-0.75);
+                        this.strafe(-0.5);
+                    } else if (key.isDown(key.DOWN) && key.isDown(key.RIGHT)) {
+                        this.move(-0.75);
+                        this.strafe(0.5);
+                    } else {
+                        if (key.isDown(key.UP)) this.move(1);
+                        if (key.isDown(key.LEFT)) this.strafe(-1);
+                        if (key.isDown(key.DOWN)) this.move(-1);
+                        if (key.isDown(key.RIGHT)) this.strafe(1);
+                    }
                     if (key.isDown(key.LUP)) this.look.upDown(1);
                     if (key.isDown(key.LLEFT)) this.turn(-1);
                     if (key.isDown(key.LDOWN)) this.look.upDown(-1);
@@ -280,9 +294,9 @@
             function update() {
                 clear.overhead();
                 map.draw_map(map);
-                player.update();
-
                 clear.pov();
+
+                player.update();
                 wall_view(ray_view);
                 requestAnimationFrame(update);
             };
